@@ -9,7 +9,7 @@ import tornado.web
 
 PORT=8888
 
-my_microbits=['zotev', 'vevez']
+my_microbits=['vozog', 'gezup', 'vuvot', 'zivoz', 'tavet']
 connected_microbits=[]
 
 class WebSocketHandler(tornado.websocket.WebSocketHandler):
@@ -191,4 +191,5 @@ def main():
 
 if __name__=='__main__':
    main()
+
 

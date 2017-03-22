@@ -9,7 +9,7 @@ import tornado.web
 
 PORT=8888
 
-my_microbits=['zotev', 'vevez']
+my_microbits=['tavet']
 connected_microbits=[]
 
 class WebSocketHandler(tornado.websocket.WebSocketHandler):
@@ -94,6 +94,7 @@ class Bluetooth():
                 if 'org.bluez.Device1' in ifaces.keys():
                     if 'Name' in ifaces['org.bluez.Device1']:
                         m=re.search('BBC micro:bit \[(\w+)\]', ifaces['org.bluez.Device1']['Name'])
+			print(ifaces['org.bluez.Device1'])
                         if m:
                             name=m.group(1)
                             if name in remaining_names:

@@ -11,7 +11,7 @@ from dbus.mainloop.glib import DBusGMainLoop
 
 PORT=8888
 
-my_microbits=['zotev']
+my_microbits=['zivoz', 'tavet', 'vuvot']
 connected_microbits=[]
 
 class WebSocketHandler(tornado.websocket.WebSocketHandler):
@@ -27,6 +27,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
     def on_btn_a(self, name, state):
         #print "WSH Button A", name, state
+	print self
         self.write_message('0 '+name+' '+str(state))
 
     def on_btn_b(self, name, state):
@@ -46,6 +47,15 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
     def on_close(self):
         print "Closed websocket"
+
+
+class a:
+	def __init__(self, x, fool):
+		self.x  = x
+		self.fool = fool
+
+	def __call__(self, a,b,c):
+		return self.fool(self.x, a,b,c)
 
 
 class IndexPageHandler(tornado.web.RequestHandler):
@@ -75,7 +85,7 @@ class Bluetooth():
         def btn_a_changed(name, characteristic, changed_state, dummy):
             if 'Value' in changed_state:
                 btn_a_state = int(changed_state['Value'][0])
-                #print name, 'button A state', str(btn_a_state)
+                print name, 'button A state', str(btn_a_state)
                 global th
                 if th:
                     th.on_btn_a(name, btn_a_state)
@@ -178,7 +188,7 @@ class Bluetooth():
                                     self.btn_a_obj[mb] = bus.get_object('org.bluez', self.btn_a_path[mb])
                                     self.btn_a_iface[mb] = dbus.Interface(bus.get_object('org.bluez', self.btn_a_path[mb]), 'org.bluez.GattCharacteristic1')
                                     self.btn_a_prop[mb] = dbus.Interface(bus.get_object('org.bluez', self.btn_a_path[mb]), dbus.PROPERTIES_IFACE)
-                                    self.btn_a_prop[mb].connect_to_signal('PropertiesChanged', lambda a, b, c: btn_a_changed(mb, a, b, c))
+                                    self.btn_a_prop[mb].connect_to_signal('PropertiesChanged', a(mb, btn_a_changed))
                                     self.btn_a_obj[mb].StartNotify(dbus_interface='org.bluez.GattCharacteristic1')
                                     print 'Setup button A for', mb
                                 if ifaces['org.bluez.GattCharacteristic1']['UUID'] == 'e95dda91-251d-470a-a062-fa1922dfa9a8':
@@ -186,7 +196,8 @@ class Bluetooth():
                                     self.btn_b_obj[mb] = bus.get_object('org.bluez', self.btn_b_path[mb])
                                     self.btn_b_iface[mb] = dbus.Interface(bus.get_object('org.bluez', self.btn_b_path[mb]), 'org.bluez.GattCharacteristic1')
                                     self.btn_b_prop[mb] = dbus.Interface(bus.get_object('org.bluez', self.btn_b_path[mb]), dbus.PROPERTIES_IFACE)
-                                    self.btn_b_prop[mb].connect_to_signal('PropertiesChanged', lambda a, b, c: btn_b_changed(mb, a, b, c))
+                                    #self.btn_b_prop[mb].connect_to_signal('PropertiesChanged', lambda a, b, c: btn_b_changed(mb, a, b, c))
+                                    self.btn_b_prop[mb].connect_to_signal('PropertiesChanged', a(mb, btn_b_changed))
                                     self.btn_b_obj[mb].StartNotify(dbus_interface='org.bluez.GattCharacteristic1')
                                     print 'Setup button B for', mb
                                 if ifaces['org.bluez.GattCharacteristic1']['UUID'] == 'e95d93ee-251d-470a-a062-fa1922dfa9a8':
@@ -198,7 +209,8 @@ class Bluetooth():
                                     self.acc_obj[mb] = bus.get_object('org.bluez', self.acc_path[mb])
                                     self.acc_iface[mb] = dbus.Interface(bus.get_object('org.bluez', self.acc_path[mb]), 'org.bluez.GattCharacteristic1')
                                     self.acc_prop[mb] = dbus.Interface(bus.get_object('org.bluez', self.acc_path[mb]), dbus.PROPERTIES_IFACE)
-                                    self.acc_prop[mb].connect_to_signal('PropertiesChanged', lambda a, b, c: acc_changed(mb, a, b, c))
+                                    #self.acc_prop[mb].connect_to_signal('PropertiesChanged', lambda a, b, c: acc_changed(mb, a, b, c))
+                                    self.acc_prop[mb].connect_to_signal('PropertiesChanged', a(mb, acc_changed))
                                     self.acc_obj[mb].StartNotify(dbus_interface='org.bluez.GattCharacteristic1')
                                     print 'Setup accelerometer for', mb
                                 if ifaces['org.bluez.GattCharacteristic1']['UUID'] == '6e400003-b5a3-f393-e0a9-e50e24dcca9e':
